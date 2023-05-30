@@ -7,5 +7,5 @@ export type Product = {
 
 export type ProductTest = {
   name: number;
-  price: string;
+  price: number;
 };
