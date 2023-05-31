@@ -6,7 +6,7 @@ import jwt from '../utils/jwt.utils';
 const login = async (username: string, password: string): Promise<ServiceResponse<string>> => {
   const result = await UserModel.findOne({ where: { username } });
 
-  if (!result || !bcrypt.compareSync(password, result.dataValues.password)) {
+  if (result === null || !bcrypt.compareSync(password, result.dataValues.password)) {
     return { status: 'UNAUTHORIZED', data: { message: 'Username or password invalid' } };
   }
 

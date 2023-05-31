@@ -1,26 +1,29 @@
-import { Order, OrderProducts } from '../types/Order';
+import { Op } from 'sequelize';
 import ProductModel from '../database/models/product.model';
-import OrderModel from '../database/models/order.model';
+import OrderModel, { OrderSequelizeModel } from '../database/models/order.model';
+import sequelize from '../database/models/index';
+import { ServiceResponse } from '../types/StatusHTTP';
 
-const getAllOrders = async (): Promise<Order[]> => {
-  const orders = await OrderModel.findAll({
-    include: [
-      {
-        model: ProductModel,
-        as: 'productIds',
-        attributes: ['id'],
-      },
+const getAllOrders = async (): Promise<ServiceResponse<OrderSequelizeModel[]>> => {
+  const result = await OrderModel.findAll({
+    attributes: [
+      'id', 'userId',
+      [sequelize.literal('JSON_ARRAYAGG(productIds.id)'), 'productIds'],
     ],
+    include: [{
+      model: ProductModel,
+      as: 'productIds',
+      attributes: [],
+      where: {
+        order_id: { [Op.col]: 'Order.id' },
+      },
+    }],
+    group: 'Order.id',
+    raw: true,
+    nest: true,
   });
 
-  const formatedOrdes = orders.map((item) => {
-    const order = item.dataValues as OrderProducts;
-    const productIds = order.productIds?.map((product) => product?.id);
-  
-    return {
-      id: order.id, userId: order.userId, productIds };
-  });
-  return formatedOrdes;
+  return { status: 'SUCCESS', data: result };
 };
 
 export default { getAllOrders };

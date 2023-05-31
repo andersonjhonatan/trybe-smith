@@ -5,7 +5,6 @@ import ProductModel, { ProductInputtableTypes } from '../database/models/product
 const validationsParams = ({ name, price }: ProductInputtableTypes): string | null => {
   if (!name) return '"name" is required';
   if (!price) return '"price" is required';
-  
   return null;
 };
 
@@ -29,7 +28,6 @@ const productCreate = async (
   if (result) {
     return { status: 'INVALID_DATA', data: { message: result } };
   }
-  console.log(mustBeString);
 
   if (mustBeString) {
     return { status: 'UNPROCESSABLE_ENTITY', data: { message: mustBeString } };

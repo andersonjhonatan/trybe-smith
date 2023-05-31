@@ -9,9 +9,9 @@ const loginController = async (req: Request, res: Response): Promise<Response> =
     return res.status(400).json({ message: '"username" and "password" are required' });
   }
 
-  const { status, data } = await LoginService.login(username, password);
+  const result = await LoginService.login(username, password);
 
-  return res.status(mapStatusHTTP(status)).json(data);
+  return res.status(mapStatusHTTP(result.status)).json(result.data);
 };
 
 export default { loginController };
